@@ -68,7 +68,7 @@ def plot():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
 
-    for backend in BACKENDS:
+    for (pos, backend) in enumerate(BACKENDS):
         data = df[df["backend"] == backend]
         keys = data.batch_size.unique()
         means = []
@@ -80,10 +80,12 @@ def plot():
             means.append(np.mean(tpt))
             sdevs.append(np.std(tpt))
 
-        ax.errorbar(keys, means, yerr=sdevs, label=backend)
+        widths = 0.5*keys
+        ax.bar(keys + pos*widths, means, yerr=sdevs, label=backend, width=widths)
 
     ax.set_xlabel("batch size")
     ax.set_ylabel("throughput (MB/s)")
+    ax.set_xscale('log')
 
     plt.tight_layout()
     fig.legend()
