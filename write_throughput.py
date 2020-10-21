@@ -36,7 +36,7 @@ def run():
     results = DataFrame([], columns=columns)
 
     num_iterations = 5
-    num_runs = len(backends) * len(batch_sizes) * num_iterations
+    num_runs = len(BACKENDS) * len(batch_sizes) * num_iterations
     count = 0
 
     for backend in BACKENDS:
@@ -76,13 +76,14 @@ def plot():
 
         for batch_size in keys:
             vals = data[data["batch_size"] == batch_size]
-            means.append(np.mean(vals.throughput))
-            sdevs.append(np.std(vals.throughput))
+            tpt = vals.throughput / (1000*1000)
+            means.append(np.mean(tpt))
+            sdevs.append(np.std(tpt))
 
         ax.errorbar(keys, means, yerr=sdevs, label=backend)
 
     ax.set_xlabel("batch size")
-    ax.set_ylabel("throughput")
+    ax.set_ylabel("throughput (MB/s)")
 
     plt.tight_layout()
     fig.legend()
