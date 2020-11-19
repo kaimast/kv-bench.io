@@ -18,7 +18,7 @@ benchdir:
 	mkdir -p ${BENCH_DIR}
 
 run: benchdir
-	cd ${BENCH_DIR} && ../runner.py --run
+	cd ${BENCH_DIR} && ../runner.py --backends=${BACKENDS}
 
 plot: benchdir
-	cd ${BENCH_DIR} && ../runner.py --plot
+	cd ${BENCH_DIR} && ../plot.py
