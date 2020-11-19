@@ -12,7 +12,7 @@ BIN_PATH = "kv-bench"
 OUT_FILE = "data.json"
 RESULTS = "results.csv"
 
-BACKENDS = ["leveldb", "rocksdb"]
+BACKENDS = ["leveldb", "rocksdb", "lsm"]
 
 def main():
     parser = argparse.ArgumentParser()
