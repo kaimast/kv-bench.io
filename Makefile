@@ -12,7 +12,7 @@ builddir:
 
 prepare: builddir
 	if [ ! -d ${BUILD_DIR}/kv-bench ]; then cd ${BUILD_DIR} && git clone ${REPO}; fi
-	cd ${BUILD_DIR}/kv-bench && git pull && cargo update && cargo install --features=${BACKENDS} --path=.
+	cd ${BUILD_DIR}/kv-bench && git pull && cargo update && cargo install --features=${BACKENDS} --path=. --force
 
 benchdir:
 	mkdir -p ${BENCH_DIR}

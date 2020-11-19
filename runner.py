@@ -19,7 +19,7 @@ def main():
     parser.add_argument("--filename", type=str, default="results.csv")
     parser.add_argument("--append", action="store_true", default=False)
     parser.add_argument("--num_iterations", type=int, default=3)
-    parser.add_argument("--workloads", type=int, default="all")
+    parser.add_argument("--workloads", type=str, default="all")
 
     args = parser.parse_args()
 
@@ -28,7 +28,7 @@ def main():
     else:
         backends = args.backends.split(',')
 
-    if args.workloads = "all"
+    if args.workloads == "all":
         workloads = ["write_only", "read_only"]
     else:
         workloads = args.workloads.split(',')
@@ -41,9 +41,8 @@ def main():
         plot(backends, args.filename)
 
 def run(backends, filename, append, num_iterations, workload):
-    workload = "write_only"
-    batch_sizes = [1, 100, 1000, 10000]
-    total_ops = 50000
+    batch_size = 1000
+    total_ops = 500 * 1000
 
     columns = ["backend", "batch_size", "throughput", "workload"]
 
@@ -52,30 +51,29 @@ def run(backends, filename, append, num_iterations, workload):
     else:
         results = DataFrame([], columns=columns)
 
-    num_runs = len(backends) * len(batch_sizes) * num_iterations
+    num_runs = len(backends) * num_iterations
     count = 0
 
     for backend in backends:
-        for batch_size in batch_sizes:
-            for _ in range(num_iterations):
-                num_ops = int(total_ops / batch_size)
+        for _ in range(num_iterations):
+            num_ops = int(total_ops / batch_size)
 
-                call([BIN_PATH, "--backend="+backend, "--workload="+workload, "--batch_size=%i"%batch_size,
-                    "--sync=true", "--outfile="+OUT_FILE, "--num_ops=%i"%num_ops])
+            call([BIN_PATH, "--backend="+backend, "--workload="+workload, "--batch_size=%i"%batch_size,
+                "--sync=true", "--outfile="+OUT_FILE, "--num_ops=%i"%num_ops])
 
-                with open(OUT_FILE) as jfile:
-                    data = json.load(jfile)
+            with open(OUT_FILE) as jfile:
+                data = json.load(jfile)
 
-                print(str(data))
+            print(str(data))
 
-                result = [backend, batch_size, data["throughput"], workload]
-                row = DataFrame([result], columns=columns)
-                results = results.append(row)
+            result = [backend, batch_size, data["throughput"], workload]
+            row = DataFrame([result], columns=columns)
+            results = results.append(row)
 
-                results.to_csv(filename, index=False)
+            results.to_csv(filename, index=False)
 
-                count += 1
-                print("Progress: %i out of %i" % (count, num_runs))
+            count += 1
+            print("Progress: %i out of %i" % (count, num_runs))
 
     print("Done")
 
