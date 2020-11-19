@@ -31,9 +31,11 @@ def main():
     else:
         workloads = args.workloads.split(',')
 
-    for workload in workloads:
+    for (pos, workload) in enumerate(workloads):
+        append = pos > 0 or args.append
+
         print("Running workload '%s'" % workload)
-        run(backends, args.filename, args.append, args.num_iterations, workload)
+        run(backends, args.filename, append, args.num_iterations, workload)
 
 def run(backends, filename, append, num_iterations, workload):
     key_range = 100*1000

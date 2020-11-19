@@ -1,6 +1,4 @@
 build
 bench
-*.data
-data.json
 *.csv
 *.pdf

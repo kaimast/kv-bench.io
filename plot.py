@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 import argparse
 from pandas import read_csv
 
@@ -10,36 +12,35 @@ def main():
 
     args = parser.parse_args()
 
-    df = read_csv(filename)
+    data = read_csv(args.filename)
 
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
 
-    backends = df.backends.unique()
-    workloads = df.workloads.unique()
+    backends = data.backend.unique()
+    workloads = data.workload.unique()
+    yticks = np.array([i for i in range(len(workloads))])
 
-    for workload in workloads:
-        wdata = df[df["workload"] == workload]
+    for (pos, backend) in enumerate(backends):
+        bdata = data[data["backend"] == backend]
+        means = []
+        sdevs = []
 
-        for (pos, backend) in enumerate(backends):
-            data = wdata[wdata["backend"] == backend]
-            vals = data[0]
-            keys = data.batch_size.unique()
-            means = []
-            sdevs = []
+        for workload in workloads:
+            wdata = bdata[bdata["workload"] == workload]
 
-            for batch_size in keys:
-                vals = data[data["batch_size"] == batch_size]
-                tpt = vals.throughput / (1000*1000)
-                means.append(np.mean(tpt))
-                sdevs.append(np.std(tpt))
+            tpt = wdata.throughput / (1000*1000)
+            means.append(np.mean(tpt))
+            sdevs.append(np.std(tpt))
 
-            widths = 0.5*keys
-            ax.bar(keys + pos*widths, means, yerr=sdevs, label=backend, width=widths)
+        width = 1.0/(len(backends)+2)
+        ax.bar(yticks + pos*width, means, yerr=sdevs, label=backend, width=width)
 
-    ax.set_xlabel("batch size")
     ax.set_ylabel("throughput (MB/s)")
-    ax.set_xscale('log')
+
+    ax.set_xlabel("workload")
+    ax.set_xticks(yticks)
+    ax.set_xticklabels(workloads)
 
     plt.tight_layout()
     fig.legend()

@@ -7,6 +7,8 @@ BACKENDS=lsm,leveldb
 
 REPO=git@github.com:kaimast/kv-bench.git
 
+all: prepare run plot
+
 builddir:
 	mkdir -p ${BUILD_DIR}
 
